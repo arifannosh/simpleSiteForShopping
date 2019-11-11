@@ -10,7 +10,7 @@ const modalCloseBtn = {
   top: 5,
   zIndex: 2,
   border: 'none',
-  color: 'white',
+  color: 'black',
   background: 'transparent'
 }
 

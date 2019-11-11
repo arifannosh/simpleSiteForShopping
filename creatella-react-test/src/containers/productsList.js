@@ -11,11 +11,11 @@ class ProductsList extends Component {
         this.state = {
             dt_list: [],
             lastPageLoaded: 1,
-            sort: 'id',
             preFetched: [],
             loadingState: true,
             isFatch: true,
-            isFetchFristTime: false
+            isFetchFristTime: false,
+            sortOption:''
         };
         this.myRef = React.createRef()
         this.handleScroll = this.handleScroll.bind(this);
@@ -26,15 +26,15 @@ class ProductsList extends Component {
     }
 
     loadMoreItems = () => {
-        let { lastPageLoaded, sort } = this.state
+        let { lastPageLoaded } = this.state
         // fetch the API and convert the response to json
-        fetch(`${API_URL}/${PRODUCTS_ENTITY}?_page=${lastPageLoaded}&_limit=${FETCH_LIMIT}&_sort=${sort}`)
+        fetch(`${API_URL}/${PRODUCTS_ENTITY}?_page=${lastPageLoaded}&_limit=${FETCH_LIMIT}&_sort=${this.props.sortOption}`)
             .then(response => response.json().then(products => {
                 if (lastPageLoaded === 1) {
                     this.setState({
                         dt_list: products,
                         lastPageLoaded: lastPageLoaded + 1,
-                        isFetchFristTime: true
+                        isFetchFristTime: true,
                     })
                 } else {
                     this.setState({
@@ -69,6 +69,7 @@ class ProductsList extends Component {
             }, () => this.loadMoreItems())
         }
     }
+   
     render() {
         let { dt_list, isFetchFristTime } = this.state
         if (isFetchFristTime) {
@@ -82,22 +83,19 @@ class ProductsList extends Component {
             );
             return (
                 <ScrollWrapper onWindowScroll={this.handleScroll}>
-                    < div style={{ paddingTop: 100, paddingBottom: 100 }} >
-                        <Grid container spacing={0}>
+                    < div style={{ paddingTop: 130, paddingBottom: 100 }} >
+                        <Grid container spacing={0} >
                             {data}
                         </Grid>
-                        {this.state.loadingState &&
-                        <Loader/>}
+                        {this.state.loadingState ?
+                        <Loader/>:
+                        <h3 style={{textAlign: 'center'}}>~ end of catalogue ~</h3>}
                     </div>
                 </ScrollWrapper>
             )
         }
         else {
-            return (
-                < >
-                    <h3>No contants</h3>
-                </>
-            )
+            return null
         }
     }
 }
@@ -107,7 +105,7 @@ export default ProductsList
 export class ListRows extends Component {
     render() {
         return (
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={3} >
                 <SimpleCard {...this.props.data} />
             </Grid>
         )

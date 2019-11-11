@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import MenuAppBar from '../components/AppBar'
 import ProductsList from './productsList'
 import AdContainer from './AdContainer'
+import SortMenu from '../components/sortMenu'
 class Products extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isShowAd: false,
-      prvAdd: []
+      prvAdd: [],
+      sortOption: 'id',
+      showProductsList: true
     };
   }
   showAd = () => {
@@ -35,14 +38,25 @@ class Products extends Component {
       prvAdd
     })
   }
-
+  handleChange = (event) => {
+    let val = event.target.value
+    if (val !== this.state.sortOption) {
+      this.setState({
+        showProductsList: false,
+        sortOption: val
+      }, () => this.setState({ showProductsList: true }))
+    }
+  }
   render() {
     return (
       < >
         <MenuAppBar />
+        <SortMenu {...this.state} handleChange={this.handleChange} />
         {this.state.isShowAd &&
           <AdContainer {...this.state} hideAd={this.hideAd} currentAdRef={this.currentAdRef} />}
-        <ProductsList showAd={this.showAd} />
+        {this.state.showProductsList &&
+          <ProductsList {...this.state} showAd={this.showAd} />
+        }
       </>
     );
   }
