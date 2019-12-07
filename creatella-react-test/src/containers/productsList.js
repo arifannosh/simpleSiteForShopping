@@ -15,7 +15,8 @@ class ProductsList extends Component {
             loadingState: true,
             isFatch: true,
             isFetchFristTime: false,
-            sortOption:''
+            sortOption: '',
+            isProductEnd: true
         };
         this.myRef = React.createRef()
         this.handleScroll = this.handleScroll.bind(this);
@@ -48,8 +49,10 @@ class ProductsList extends Component {
                 // if data received is below the limit
                 if (products.length < FETCH_LIMIT) {
                     this.setState({
-                        loadingState: false,
-                        isFatch: false
+                        preFetched: products,
+                        lastPageLoaded: lastPageLoaded + 1,
+                        isProductEnd: false,
+                        //isFatch: false
                     })
                 }
             })
@@ -59,17 +62,25 @@ class ProductsList extends Component {
     handleScroll = () => {
         if (this.state.isFatch &&
             window.pageYOffset + window.innerHeight >=
-            document.body.offsetHeight -72) {
+            document.body.offsetHeight - 72) {
             if (this.props.showAd) {
                 this.props.showAd()
             }
             this.setState({
                 isFatch: false,
                 dt_list: this.state.dt_list.concat(this.state.preFetched),
-            }, () => this.loadMoreItems())
+            }, () => {
+                if (this.state.isProductEnd) {
+                    this.loadMoreItems()
+                }else{
+                    this.setState({
+                        loadingState: false
+                    })
+                }
+            })
         }
     }
-   
+
     render() {
         let { dt_list, isFetchFristTime } = this.state
         if (isFetchFristTime) {
@@ -88,8 +99,8 @@ class ProductsList extends Component {
                             {data}
                         </Grid>
                         {this.state.loadingState ?
-                        <Loader/>:
-                        <h3 style={{textAlign: 'center'}}>~ end of catalogue ~</h3>}
+                            <Loader /> :
+                            <h3 style={{ textAlign: 'center' }}>~ end of catalogue ~</h3>}
                     </div>
                 </ScrollWrapper>
             )
